@@ -15,13 +15,13 @@ const router = new Router({
   routes: [
     {
       path: "/",
-      redirect: "main",
-      //component: () => import("@/layouts/full-layout/MainLayout"),
+      redirect: "/main",
+      component: () => import("@/layout/MainLayout"),
       children: [
         {
-          //   name: "Dashboard",
-          //   path: "dashboard",
-          //component: () => import("@/"),
+          name: "Main",
+          path: "main",
+          component: () => import("@/views/MainPage.vue"),
         },
       ],
     },
