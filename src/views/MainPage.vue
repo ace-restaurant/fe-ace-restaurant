@@ -57,6 +57,9 @@
         </div>
       </VueSlickCarousel>
     </div>
+    <div class="kakao-map-container">
+      <KakaoMap />
+    </div>
     <div class="circle-1"></div>
     <div class="circle-2"></div>
     <div class="circle-3"></div>
@@ -107,7 +110,9 @@ export default {
   }),
   components: {
     VueSlickCarousel,
+    KakaoMap: () => import("./components/KakaoMap.vue"),
   },
+
   methods: {
     selectFilter(item) {
       console.log(1);
@@ -230,6 +235,9 @@ export default {
   width: 70px;
   height: 70px;
   background-color: #ffcdb1;
+}
+.kakao-map-container {
+  margin: 30px auto;
 }
 </style>
 
