@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ placeList }}
     <div id="map" style="width: 800px; height: 600px"></div>
   </div>
 </template>
@@ -13,22 +12,7 @@ export default {
       map: null,
       markers: [],
       infowindow: null,
-      placeList: [
-        {
-          title: "마녀주방 강남점",
-          keywords: [],
-          //id
-        },
-        {
-          title: "바비레드 강남본점",
-          keywords: [],
-          //id
-        },
-        {
-          title: "스타벅스 강남논현점",
-          keywords: [],
-        },
-      ],
+      placeList: [],
       placeInfoList: [],
     };
   },
@@ -44,24 +28,20 @@ export default {
         "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=82885c42ee75117237a2ad05bd845d86";
       document.head.appendChild(script);
     }
-    this.searchKeyword();
+    // this.searchKeyword();
   },
   methods: {
     initMap() {
       const container = document.getElementById("map");
       const options = {
         center: new kakao.maps.LatLng(37.4994819739, 127.02809126759875),
-        level: 5,
+        level: 6,
       };
-      console.log(123);
-      console.log(new kakao.maps.LatLng(37.4994819739, 127.02809126759875));
       //지도 객체를 등록합니다.
       //지도 객체는 반응형 관리 대상이 아니므로 initMap에서 선언합니다.
       this.map = new kakao.maps.Map(container, options);
-      console.log(this.map);
     },
     async searchKeyword() {
-      console.log(1);
       // 장소 검색 객체를 생성합니다
       var ps = new kakao.maps.services.Places();
 
@@ -113,26 +93,146 @@ export default {
           var markerContent =
             '<div class="overlaybox">' +
             `    <div class="boxtitle">${this.placeList[i].title}</div>` +
-            '        <div class="star">★★★★</div>' +
-            '<div class="keyword"> #맛있다 #맛없다' +
-            "</div> " +
+            '    <div class="star">★★★★★</div>' +
+            `<div class="keyword"> #${this.placeList[i].keywords[0]} #${this.placeList[i].keywords[1]}` +
+            `#${this.placeList[i].keywords[2]} #${this.placeList[i].keywords[3]} #${this.placeList[i].keywords[4]}` +
+            `</div>` +
             "</div>";
 
-          var customOverlay = new kakao.maps.CustomOverlay({
-            position: new kakao.maps.LatLng(
-              this.placeList[i].y,
-              this.placeList[i].x
-            ),
-            map: this.map,
+          var infowindow = new kakao.maps.InfoWindow({
+            // position: new kakao.maps.LatLng(
+            //   this.placeList[i].y,
+            //   this.placeList[i].x
+            // ),
+            // map: this.map,
             content: markerContent,
           });
-
-          kakao.maps.event.addListener(marker, "click", function () {
-            console.log(1);
-            customOverlay.setMap(this.map);
-          });
+          kakao.maps.event.addListener(
+            marker,
+            "mouseover",
+            this.makeOverListener(this.map, marker, infowindow)
+          );
+          kakao.maps.event.addListener(
+            marker,
+            "mouseout",
+            this.makeOutListener(infowindow)
+          );
+          // kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
+          // kakao.maps.event.addListener(marker, "click", function () {
+          //   console.log(1);
+          //   customOverlay.open(this.map, )
+          // });
         }
       }
+    },
+    makeOverListener(map, marker, infowindow) {
+      return function () {
+        infowindow.open(map, marker);
+      };
+    },
+
+    // 인포윈도우를 닫는 클로저를 만드는 함수입니다
+    makeOutListener(infowindow) {
+      return function () {
+        infowindow.close();
+      };
+    },
+    displayTest1() {
+      this.initMap();
+      this.placeList = [
+        {
+          title: "로제닭갈비",
+          keywords: ["가성비", "닭갈비", "로제", "치즈", "볶음밥"],
+          rating: 5,
+          //id
+        },
+        {
+          title: "밥밥디라라",
+          keywords: ["가성비", "혼밥", "덮밥", "매장", "깔끔"],
+          rating: 5,
+          //id
+        },
+        {
+          title: "강남 돼지상회 무한리필",
+          keywords: ["가성비", "무한", "냉면", "삼겹살", "배부르다"],
+          rating: 5,
+        },
+        {
+          title: "이대성의진면목",
+          keywords: ["가성비", "깔끔", "샤브", "칼국수", "점심"],
+        },
+        {
+          title: "이층고깃집 강남구청역점",
+          keywords: ["가성비", "소고기", "넓어서", "깔끔", "고깃집"],
+        },
+        {
+          title: "류몽민",
+          keywords: ["가성비", "닭갈비", "치즈", "학동역", "직원분"],
+        },
+        {
+          title: "온돌 더프라임",
+          keywords: ["가성비", "전골", "소고기", "온돌", "부드럽다"],
+        },
+        {
+          title: "몽블리 강남역11번출구점",
+          keywords: ["가성비", "소고기", "무한", "곱창", "신선"],
+        },
+        {
+          title: "수묵당",
+          keywords: ["가성비", "분위기", "만족", "식사", "코스"],
+        },
+        {
+          title: "미테리언육식주의자",
+          keywords: ["가성비", "분위기", "깔끔", "만족", "와규"],
+        },
+        {
+          title: "화기애애 강남점",
+          keywords: ["가성비", "분위기", "만족", "갈비살", "소고기"],
+        },
+        {
+          title: "곱창고 강남역점",
+          keywords: ["가성비", "곱창", "볶음밥", "강남", "직원분"],
+        },
+      ];
+      this.searchKeyword();
+    },
+    displayTest2() {
+      this.initMap();
+      this.placeList = [
+        {
+          title: "백억하누 강남본점",
+          keywords: ["분위기", "룸", "전복", "소고기", "부모님"],
+          //id
+        },
+        {
+          title: "도쿄등심 청담점",
+          keywords: ["분위기", "룸", "코스", "만족", "예약"],
+          //id
+        },
+        {
+          title: "도쿄등심 압구정점",
+          keywords: ["분위기", "룸", "코스", "만족", "특별한"],
+        },
+        {
+          title: "창고43 강남점",
+          keywords: ["분위기", "룸", "예약", "만족", "식사"],
+        },
+        {
+          title: "창고43 삼성점",
+          keywords: ["분위기", "룸", "예약", "만족", "점심"],
+        },
+      ];
+      this.searchKeyword();
+    },
+    displayTest3() {
+      this.initMap();
+      this.placeList = [
+        {
+          title: "두껍삼 역삼직영점",
+          keywords: ["삼겹살", "예약", "회식", "편하다", "만족"],
+        },
+      ];
+      this.searchKeyword();
     },
   },
 };
@@ -140,9 +240,11 @@ export default {
 
 <style>
 .overlaybox {
+  border: 2px solid #000000;
+  padding: 10px;
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 160px;
+  height: 160px;
   background-color: #ffffff;
   display: flex;
   justify-content: center;
@@ -161,14 +263,24 @@ ul {
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 8px;
+  text-align: center;
+}
+.overlaybox .keyword {
+  text-align: center;
+  /* color:  */
+}
+.overlaybox .keyword .strong {
+  font-weight: 700;
+  /* color:  */
 }
 .overlaybox .star {
   color: #ff3131;
   margin-bottom: 8px;
 }
 .overlaybox keyword {
+  text-align: center;
   color: #000000;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 24px;
   font-weight: 700;
 }

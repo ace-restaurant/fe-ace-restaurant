@@ -24,41 +24,41 @@
       <VueSlickCarousel :arrows="true" :dots="true">
         <div class="main-tag-group text-center">
           <button
-            v-for="(item, i) in tags"
+            v-for="(item, i) in tags1"
             :key="`review-filter-${i}`"
             @click="selectTag(item)"
             class="tag tag-main"
             :class="isSelectedTag(item) ? 'selected' : ''"
           >
-            {{ item }}
+            #{{ item }}
           </button>
         </div>
         <div class="main-tag-group text-center">
           <button
-            v-for="(item, i) in tags"
+            v-for="(item, i) in tags2"
             :key="`review-filter-${i}`"
             @click="selectTag(item)"
             class="tag tag-main"
             :class="isSelectedTag(item) ? 'selected' : ''"
           >
-            {{ item }}
+            #{{ item }}
           </button>
         </div>
         <div class="main-tag-group text-center">
           <button
-            v-for="(item, i) in tags"
+            v-for="(item, i) in tags3"
             :key="`review-filter-${i}`"
             @click="selectTag(item)"
             class="tag tag-main"
             :class="isSelectedTag(item) ? 'selected' : ''"
           >
-            {{ item }}
+            #{{ item }}
           </button>
         </div>
       </VueSlickCarousel>
     </div>
     <div class="kakao-map-container">
-      <KakaoMap />
+      <KakaoMap ref="kakaoMap" />
     </div>
     <div class="circle-1"></div>
     <div class="circle-2"></div>
@@ -73,40 +73,70 @@ import "vue-slick-carousel/dist/vue-slick-carousel.css";
 import "vue-slick-carousel/dist/vue-slick-carousel-theme.css";
 export default {
   data: () => ({
-    filters: [
-      "한식",
-      "중식",
-      "일식",
-      "양식",
-      "분식",
-      "카페",
-      "패스트푸드",
-      "주점",
-    ],
+    filters: ["한식", "중식", "일식", "양식", "카페", "패스트푸드"],
     selectedFilter: "한식",
-    tags: [
-      "#맛있다",
-      "#맛있다1",
-      "#맛있다2",
-      "#맛있다3",
-      "#맛있다4",
-      "#맛있다5",
-      "#맛있다6",
-      "#맛있다7",
-      "#맛있다8",
-      "#맛있다9",
-      "#맛있다10",
-      "#맛있다11",
-      "#맛있다12",
-      "#맛있다14",
-      "#맛있다15",
-      "#맛있다16",
-      "#맛있다17",
-      "#맛있다18",
-      "#맛있다19",
-      "#맛있다20",
+    tags1: [
+      "분위기",
+      "가성비",
+      "깔끔",
+      "만족",
+      "예약",
+      "국물",
+      "점심",
+      "볶음밥",
+      "부드럽다",
+      "소고기",
+      "곱창",
+      "포장",
+      "룸",
+      "코스",
+      "갈비탕",
+      "삼겹살",
+      "웨이팅",
+      "특별한",
+    ],
+    tags2: [
+      "재방문",
+      "갈비",
+      "목살",
+      "반찬",
+      "전골",
+      "만두",
+      "냉면",
+      "설명",
+      "닭갈비",
+      "치즈",
+      "국밥",
+      "감자탕",
+      "족발",
+      "정갈",
+      "김치",
+      "코엑스",
+      "불친절",
+      "순대",
+    ],
+    tags3: [
+      "줄서",
+      "최애",
+      "뼈해장국",
+      "양념",
+      "선릉",
+      "육회",
+      "들기름",
+      "무한",
+      "대창",
+      "오겹살",
+      "회식",
+      "이베리코",
+      "삼성동",
+      "부모님",
+      "삼합",
+      "생갈비",
+      "차돌",
+      "넓고",
     ],
     selectedTags: [],
+    condition: 0,
   }),
   components: {
     VueSlickCarousel,
@@ -115,11 +145,23 @@ export default {
 
   methods: {
     selectFilter(item) {
-      console.log(1);
       this.selectedFilter = item;
     },
     selectTag(item) {
-      this.selectedTags.push(item);
+      const itemIndex = this.selectedTags.indexOf(item);
+      if (itemIndex > -1) {
+        this.selectedTags.splice(itemIndex, 1);
+      } else {
+        this.selectedTags.push(item);
+        if (item == "가성비") {
+          console.log("가성비");
+          this.$refs.kakaoMap.displayTest1();
+        } else if (item == "룸") {
+          this.$refs.kakaoMap.displayTest2();
+        } else if (item == "회식") {
+          this.$refs.kakaoMap.displayTest3();
+        }
+      }
     },
     isSelectedTag(item) {
       if (this.selectedTags.includes(item)) {
@@ -193,7 +235,7 @@ export default {
   background-color: #ffffff;
   margin: 15px 10px;
   padding: 5px 10px;
-  font-size: 20px;
+  font-size: 25px;
   border: 0px !important;
   border-width: 0px;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,

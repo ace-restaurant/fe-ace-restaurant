@@ -1,6 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="header d-flex justify-content-center align-items-center">
+      <img src="@/assets/icon.svg" />
       <span>에이스 레스토랑</span>
     </div>
     <div class="main-content">
