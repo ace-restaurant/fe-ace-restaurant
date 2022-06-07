@@ -58,7 +58,7 @@
       </VueSlickCarousel>
     </div>
     <div class="kakao-map-container">
-      <KakaoMap ref="kakaoMap" />
+      <KakaoMap ref="kakaoMap" :propPlaceList="placeList" />
     </div>
     <div class="circle-1"></div>
     <div class="circle-2"></div>
@@ -67,83 +67,78 @@
 </template>
 
 <script>
+import axios from "axios";
+import {
+  korean,
+  chinense,
+  japanese,
+  western,
+  cafe,
+  fastfood,
+} from "../service/keywords";
 import VueSlickCarousel from "vue-slick-carousel";
 import "vue-slick-carousel/dist/vue-slick-carousel.css";
 // optional style for arrows & dots
 import "vue-slick-carousel/dist/vue-slick-carousel-theme.css";
 export default {
   data: () => ({
+    name: "",
     filters: ["한식", "중식", "일식", "양식", "카페", "패스트푸드"],
     selectedFilter: "한식",
-    tags1: [
-      "분위기",
-      "가성비",
-      "깔끔",
-      "만족",
-      "예약",
-      "국물",
-      "점심",
-      "볶음밥",
-      "부드럽다",
-      "소고기",
-      "곱창",
-      "포장",
-      "룸",
-      "코스",
-      "갈비탕",
-      "삼겹살",
-      "웨이팅",
-      "특별한",
-    ],
-    tags2: [
-      "재방문",
-      "갈비",
-      "목살",
-      "반찬",
-      "전골",
-      "만두",
-      "냉면",
-      "설명",
-      "닭갈비",
-      "치즈",
-      "국밥",
-      "감자탕",
-      "족발",
-      "정갈",
-      "김치",
-      "코엑스",
-      "불친절",
-      "순대",
-    ],
-    tags3: [
-      "줄서",
-      "최애",
-      "뼈해장국",
-      "양념",
-      "선릉",
-      "육회",
-      "들기름",
-      "무한",
-      "대창",
-      "오겹살",
-      "회식",
-      "이베리코",
-      "삼성동",
-      "부모님",
-      "삼합",
-      "생갈비",
-      "차돌",
-      "넓고",
-    ],
+    tags1: [],
+    tags2: [],
+    tags3: [],
+    type: "1",
     selectedTags: [],
-    condition: 0,
+    placeList: [],
   }),
   components: {
     VueSlickCarousel,
     KakaoMap: () => import("./components/KakaoMap.vue"),
   },
 
+  created() {
+    this.getTagsByFilter();
+  },
+  watch: {
+    selectedFilter: "getTagsByFilter",
+  },
+
   methods: {
+    getTagsByFilter() {
+      if (this.selectedFilter == "한식") {
+        this.tags1 = korean.tags1;
+        this.tags2 = korean.tags2;
+        this.tags3 = korean.tags3;
+        this.type = "1";
+      } else if (this.selectedFilter == "중식") {
+        this.tags1 = chinense.tags1;
+        this.tags2 = chinense.tags2;
+        this.tags3 = chinense.tags3;
+        this.type = "2";
+      } else if (this.selectedFilter == "일식") {
+        this.tags1 = japanese.tags1;
+        this.tags2 = japanese.tags2;
+        this.tags3 = japanese.tags3;
+        this.type = "3";
+      } else if (this.selectedFilter == "양식") {
+        this.tags1 = western.tags1;
+        this.tags2 = western.tags2;
+        this.tags3 = western.tags3;
+        this.type = "4";
+      } else if (this.selectedFilter == "카페") {
+        this.tags1 = cafe.tags1;
+        this.tags2 = cafe.tags2;
+        this.tags3 = cafe.tags3;
+        this.type = "5";
+      } else {
+        this.tags1 = fastfood.tags1;
+        this.tags2 = fastfood.tags2;
+        this.tags3 = fastfood.tags3;
+        this.type = "6";
+      }
+      this.selectedTags = [];
+    },
     selectFilter(item) {
       this.selectedFilter = item;
     },
@@ -153,15 +148,8 @@ export default {
         this.selectedTags.splice(itemIndex, 1);
       } else {
         this.selectedTags.push(item);
-        if (item == "가성비") {
-          console.log("가성비");
-          this.$refs.kakaoMap.displayTest1();
-        } else if (item == "룸") {
-          this.$refs.kakaoMap.displayTest2();
-        } else if (item == "회식") {
-          this.$refs.kakaoMap.displayTest3();
-        }
       }
+      this.api(this.selectedTags);
     },
     isSelectedTag(item) {
       if (this.selectedTags.includes(item)) {
@@ -169,6 +157,18 @@ export default {
       } else {
         return false;
       }
+    },
+    api() {
+      console.log(this.selectedTags);
+      axios
+        .post("http://localhost:3000/restaurant", {
+          tags: this.selectedTags.join(","),
+          type: this.type,
+        })
+        .then((res) => {
+          console.log(res);
+          this.placeList = res.data;
+        });
     },
   },
 };

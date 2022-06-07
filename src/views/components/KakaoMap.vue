@@ -7,14 +7,28 @@
 <script>
 export default {
   name: "KakaoMap",
+  props: {
+    propPlaceList: {
+      type: Array,
+      default: () => [
+        {
+          name: "",
+          type: "",
+          keywords: [],
+        },
+      ],
+    },
+  },
   data() {
     return {
       map: null,
       markers: [],
       infowindow: null,
       placeList: [],
-      placeInfoList: [],
     };
+  },
+  watch: {
+    propPlaceList: "initPlaceList",
   },
 
   mounted() {
@@ -28,9 +42,16 @@ export default {
         "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=82885c42ee75117237a2ad05bd845d86";
       document.head.appendChild(script);
     }
+
     // this.searchKeyword();
   },
   methods: {
+    initPlaceList() {
+      console.log(this.propPlaceList);
+      this.placeList = this.propPlaceList;
+      this.display();
+    },
+
     initMap() {
       const container = document.getElementById("map");
       const options = {
@@ -47,14 +68,14 @@ export default {
 
       // 키워드로 장소를 검색합니다
       this.placeList.forEach((item) => {
-        ps.keywordSearch(item.title, this.placesSearchCB);
+        ps.keywordSearch(item.name, this.placesSearchCB);
       });
     },
 
     placesSearchCB(data, status) {
       if (status === kakao.maps.services.Status.OK) {
         const index = this.placeList.findIndex(
-          (i) => i.title == data[0].place_name
+          (i) => i.name == data[0].place_name
         );
         if (index != -1) {
           this.placeList[index].id = data[0].id;
@@ -92,10 +113,10 @@ export default {
           marker.setMap(this.map);
           var markerContent =
             '<div class="overlaybox">' +
-            `    <div class="boxtitle">${this.placeList[i].title}</div>` +
+            `    <div class="boxtitle">${this.placeList[i].name}</div>` +
             '    <div class="star">★★★★★</div>' +
             `<div class="keyword"> #${this.placeList[i].keywords[0]} #${this.placeList[i].keywords[1]}` +
-            `#${this.placeList[i].keywords[2]} #${this.placeList[i].keywords[3]} #${this.placeList[i].keywords[4]}` +
+            `#${this.placeList[i].keywords[2]} #${this.placeList[i].keywords[3]} #${this.placeList[i].keywords[4]}  #${this.placeList[i].keywords[5]}  #${this.placeList[i].keywords[6]}  #${this.placeList[i].keywords[7]}  #${this.placeList[i].keywords[8]}  #${this.placeList[i].keywords[9]}` +
             `</div>` +
             "</div>";
 
@@ -136,6 +157,10 @@ export default {
       return function () {
         infowindow.close();
       };
+    },
+    display() {
+      this.initMap();
+      this.searchKeyword();
     },
     displayTest1() {
       this.initMap();
@@ -243,8 +268,8 @@ export default {
   border: 2px solid #000000;
   padding: 10px;
   position: relative;
-  width: 160px;
-  height: 160px;
+  width: 200px;
+  height: 200px;
   background-color: #ffffff;
   display: flex;
   justify-content: center;
@@ -280,9 +305,9 @@ ul {
 .overlaybox keyword {
   text-align: center;
   color: #000000;
-  font-size: 18px;
-  line-height: 24px;
-  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
 }
 .overlaybox:after {
   content: "";
